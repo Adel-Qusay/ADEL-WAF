@@ -1,5 +1,8 @@
 # ADEL-WAF
 PHP lightweight in-app Web Application Firewall.
+
+![alt text](https://raw.githubusercontent.com/Adel-Qusay/ADEL-WAF/main/Screenshot.png)
+
 Protect against:
 - Cross-site scripting (XSS)
 - SQL injection (SQLI)
@@ -12,4 +15,3 @@ Include this PHP file in every page you want to protect.
 
 Note: Works with all PHP frameworks (Use it as a filter)
 
-![alt text](https://raw.githubusercontent.com/Adel-Qusay/ADEL-WAF/main/Screenshot.png)
