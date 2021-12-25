@@ -12,9 +12,9 @@ class AdelWAF {
 	private $EMAIL = 'email@email.com'; 
 	/* ------ END USER CONFIGURATION ------ */
 
-	private $xssRules = array("</scr", "<script", "onabort=","onauxclick=","oncancel=","oncanplay=","oncanplaythrough=","onchange=","onclick=","onclose=","oncontextmenu=","oncuechange=","ondblclick=","ondrag=","ondragend=","ondragenter=","ondragexit=","ondragleave=","ondragover=","ondragstart=","ondrop=","ondurationchange=","onemptied=","onended=","onformdata=","oninput=","oninvalid=","onkeydown=","onkeypress=","onkeyup=","onloadeddata=","onloadedmetadata=","onloadstart=","onmousedown=","onmouseenter=","onmouseleave=","onmousemove=","onmouseout=","onmouseover=","onmouseup=","onpause=","onplay=","onplaying=","onprogress=","onratechange=","onreset=","onsecuritypolicyviolation=","onseeked=","onseeking=","onselect=","onslotchange=","onstalled=","onsubmit=","onsuspend=","ontimeupdate=","ontoggle=","onvolumechange=","onwaiting=","onwebkitanimationend=","onwebkitanimationiteration=","onwebkitanimationstart=","onwebkittransitionend=","onwheel=","onblur=","onerror=","onfocus=","onload=","onresize=","onscroll=","onafterprint=","onbeforeprint=","onbeforeunload=","onhashchange=","onlanguagechange=","onmessage=","onmessageerror=","onoffline=","ononline=","onpagehide=","onpageshow=","onpopstate=","onrejectionhandled=","onstorage=","onunhandledrejection=","onunload=","oncut=","oncopy=","onpaste=","onreadystatechange=","<iframe", "javascript:","<frame","<embed","<object","href=","src=");
+	private $xssRules = array("<img", "img>", "<image", "</scr", "<script", "onabort=","onauxclick=","oncancel=","oncanplay=","oncanplaythrough=","onchange=","onclick=","onclose=","oncontextmenu=","oncuechange=","ondblclick=","ondrag=","ondragend=","ondragenter=","ondragexit=","ondragleave=","ondragover=","ondragstart=","ondrop=","ondurationchange=","onemptied=","onended=","onformdata=","oninput=","oninvalid=","onkeydown=","onkeypress=","onkeyup=","onloadeddata=","onloadedmetadata=","onloadstart=","onmousedown=","onmouseenter=","onmouseleave=","onmousemove=","onmouseout=","onmouseover=","onmouseup=","onpause=","onplay=","onplaying=","onprogress=","onratechange=","onreset=","onsecuritypolicyviolation=","onseeked=","onseeking=","onselect=","onslotchange=","onstalled=","onsubmit=","onsuspend=","ontimeupdate=","ontoggle=","onvolumechange=","onwaiting=","onwebkitanimationend=","onwebkitanimationiteration=","onwebkitanimationstart=","onwebkittransitionend=","onwheel=","onblur=","onerror=","onfocus=","onload=","onresize=","onscroll=","onafterprint=","onbeforeprint=","onbeforeunload=","onhashchange=","onlanguagechange=","onmessage=","onmessageerror=","onoffline=","ononline=","onpagehide=","onpageshow=","onpopstate=","onrejectionhandled=","onstorage=","onunhandledrejection=","onunload=","oncut=","oncopy=","onpaste=","onreadystatechange=","<iframe", "javascript:","<frame","<embed","<object","href=","src=");
 	
-	private $sqliRules = array("select*from", ";--","and(select", "or(select", "count(", "information_schema", "schema_name", "extractvalue", "concat(", "json_keys(", "droptable", "selectif","'select","unionall","'and'","'or'", "unionselect","orderby","groupby","insertinto","intooutfile","benchmark(","waitfordelay","waitfortime","sleep(");
+	private $sqliRules = array("table_schema", "or '1", "unhex(hex(concat(", "select*from", ";--","and(select", "or(select", "count(", "information_schema", "schema_name", "extractvalue", "concat(", "json_keys(", "droptable", "selectif","'select","unionall","'and'","'or'", "unionselect","orderby","groupby","insertinto","intooutfile","benchmark(","waitfordelay","waitfortime","sleep(");
 	
 	private $lfiRules = array("..\\","../","..\\/");
 	
@@ -52,19 +52,21 @@ class AdelWAF {
 			if (count($_REQUEST) > 20) {
 				$this->warn('Denial of service (DOS)', 'count', count($_REQUEST));
 			} else {
-				if ($this->lookForRules($this->webShellRules, file_get_contents(__DIR__ .'/'.basename($_SERVER['PHP_SELF'])))) $this->warn('Web shell');						
-				foreach ($_REQUEST as $key => $value) {
-					$value = html_entity_decode(str_replace(" ", "", strtolower($value)));
-					if ($this->lookForRules($this->xssRules, $value))
-						$this->warn('Cross-site scripting (XSS)', $key, $value);
-					elseif ($this->lookForRules($this->sqliRules, $value))
-						$this->warn('SQL injection (SQLI)', $key, $value);
-					elseif ($this->lookForRules($this->rfiRules, $value))
-						$this->warn('Remote file inclusion (RFI)', $key, $value);
-					elseif ($this->lookForRules($this->rceRules, $value))
-						$this->warn('Remote code execution (RCE)', $key, $value);
-					elseif ($this->lookForRules($this->lfiRules, $value))
-						$this->warn('Local file inclusion (LFI)', $key, $value);						
+				if (!isset($_COOKIE['phpMyAdmin'])) {
+					if ($this->lookForRules($this->webShellRules, file_get_contents(__DIR__ .'/'.basename($_SERVER['PHP_SELF'])))) $this->warn('Web shell');						
+					foreach ($_REQUEST as $key => $value) {
+						$value = html_entity_decode(str_replace(" ", "", strtolower($value)));
+						if ($this->lookForRules($this->xssRules, $value))
+							$this->warn('Cross-site scripting (XSS)', $key, $value);
+						elseif ($this->lookForRules($this->sqliRules, $value))
+							$this->warn('SQL injection (SQLI)', $key, $value);
+						elseif ($this->lookForRules($this->rfiRules, $value))
+							$this->warn('Remote file inclusion (RFI)', $key, $value);
+						elseif ($this->lookForRules($this->rceRules, $value))
+							$this->warn('Remote code execution (RCE)', $key, $value);
+						elseif ($this->lookForRules($this->lfiRules, $value))
+							$this->warn('Local file inclusion (LFI)', $key, $value);						
+					}
 				}
 			}
 		}
