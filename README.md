@@ -9,3 +9,4 @@ Protect against:
 - Web shells
 Include this PHP file in every page you want to protect.
 Note: Works with all PHP frameworks (Use it as a filter)
+![alt text](https://raw.githubusercontent.com/Adel-Qusay/ADEL-WAF/main/Screenshot.png)
