@@ -13,10 +13,16 @@ Features / Protections Against:
 - Web shells
 
 How to use:
+
 Configure your web server:
+
 Apache: php_value auto_prepend_file "/path/to/AdelWAF.php"
+
 Nginx: fastcgi_param PHP_VALUE "auto_prepend_file=/path/to/AdelWAF.php";
+
 --------------------------------OR--------------------------------
+
 Include this PHP file in every page you want to protect.
+
 Note: Works with all PHP frameworks (Use it as a filter)
 
