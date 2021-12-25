@@ -15,15 +15,15 @@ Features / Protections Against:
 How to use:
 
 Edit - php.ini File:
-
+```
 auto_prepend_file = "/path/to/AdelWAF.php" 
-
+```
 --------------------------------OR--------------------------------
 
 Edit - .htaccess File (only if unable to edit php.ini)
-
+```
 <IfModule php7_module> php_value auto_prepend_file "/path/to/AdelWAF.php" </IfModule> <IfModule lsapi_module> php_value auto_prepend_file "/path/to/AdelWAF.php" </IfModule> 
-
+```
 --------------------------------OR--------------------------------
 
 Include this PHP file in every page you want to protect.
