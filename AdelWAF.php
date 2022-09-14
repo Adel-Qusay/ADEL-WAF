@@ -6,9 +6,10 @@
 
 class AdelWAF {
 
-	/* ------ USER CONFIGURATION VARIABLES -------- */
 	private $PRODUCT = 'AdelWAF';
-	private $VERSION = '1.0.1'; 	
+	private $VERSION = '1.0.1'; 
+	
+	/* ------ USER CONFIGURATION VARIABLES -------- */	
 	private $ENABLE_WAF = true;
 	private $EXCLUDE_DOMAINS = array("zerowaf.test");
 	private $ENABLE_EMAIL_NOTIFICATIONS = false;
