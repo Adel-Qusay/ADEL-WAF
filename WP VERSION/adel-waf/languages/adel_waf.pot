@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Package Name\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-16 18:05+0100\n"
+"PO-Revision-Date: 2022-12-16 18:09+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Eazy Po 1.0.0.0\n"
+
+#: adel-waf.php:61
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: adel-waf.php:81
+msgid "ADEL WAF Settings"
+msgstr "إعدادات عادل WAF"
+
+#: adel-waf.php:82
+msgid ""
+"The ADEL WAF is a Web Application Firewall for Wordpress. Protects against "
+"web attacks."
+msgstr "عادل WAF هو جدار حماية لتطبيق الويب لـ Wordpress. يحمي من هجمات الويب."
+
+#: adel-waf.php:83
+#, php-format
+msgid "%1$sTest your configuration now!%2$s"
+msgstr "جرب الحماية الآن"
+
+#: adel-waf.php:90
+msgid "Manage firewall"
+msgstr "إدارة جدار الحماية"
+
+#: adel-waf.php:94
+msgid "Firewall status"
+msgstr "حالة جدار الحماية"
+
+#: adel-waf.php:98 adel-waf.php:116
+msgid "ON"
+msgstr "تفعيل"
+
+#: adel-waf.php:101 adel-waf.php:119
+msgid "OFF"
+msgstr "تعطيل"
+
+#: adel-waf.php:108
+msgid "Manage logs"
+msgstr "إدارة السجلات"
+
+#: adel-waf.php:112
+msgid "Logs status"
+msgstr "حالة السجلات"
+
+#: adel-waf.php:126
+msgid "Logs file"
+msgstr "ملف السجلات"
+
+#: adel-waf.php:134
+msgid "Manage notification"
+msgstr "إدارة الإشعارات"
+
+#: adel-waf.php:138
+msgid "Send notifications"
+msgstr "إرسال الإشعارات"
+
+#: adel-waf.php:145
+msgid "Email address"
+msgstr "البريد الإلكتروني"
+
+#: adel-waf.php:156
+msgid "Save Changes"
+msgstr "حفظ التغيرات"
