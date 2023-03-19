@@ -16,7 +16,7 @@ class AdelWAF {
 	private $ENABLE_EMAIL_NOTIFICATIONS = false;
 	private $EMAIL = 'email@email.com'; 
 	private $ENABLE_LOGS = true;
-	private $MAX_REQ_LEN = 120;	
+	private $MAX_REQ_LEN = 20;	
 	private $LOGS_FILE = 'awlogs.txt';
 	/* ------ END USER CONFIGURATION ------ */
 
