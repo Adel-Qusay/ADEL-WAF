@@ -16,6 +16,7 @@ class AdelWAF {
 	private $ENABLE_EMAIL_NOTIFICATIONS = false;
 	private $EMAIL = 'email@email.com'; 
 	private $ENABLE_LOGS = true;
+	private $MAX_REQ_LEN = 120;	
 	private $LOGS_FILE = 'awlogs.txt';
 	/* ------ END USER CONFIGURATION ------ */
 
@@ -137,7 +138,7 @@ class AdelWAF {
 		if ($this->ENABLE_WAF) {	
 			$info = $this->infoCollect();
 			if (!$this->strposa($this->EXCLUDE_DOMAINS, $_SERVER['HTTP_HOST'])) {
-				if (count($_REQUEST) > 20) {
+				if (count($_REQUEST) > $this->MAX_REQ_LEN) {
 					$this->warn($info, 'Denial of service (DOS)', 'count', count($_REQUEST));
 				} else {
 					if (!isset($_COOKIE['phpMyAdmin'])) {
