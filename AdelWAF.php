@@ -40,7 +40,7 @@ class AdelWAF {
 		}
 	}
 
-	function strposa($needles, $haystack) {
+	function striposa($needles, $haystack) {
 		if (!is_array($needles)) {
 			$needles = [$needles];
 		}
@@ -48,12 +48,12 @@ class AdelWAF {
 		foreach ($needles as $needle) {
 			if (is_array($haystack)) {
 				foreach ($haystack as $hay) {
-					if (strpos($hay, $needle) !== false) {
+					if (stripos($hay, $needle) !== false) {
 						return true;
 					}
 				}
 			} else {
-				if (strpos($haystack, $needle) !== false) {
+				if (stripos($haystack, $needle) !== false) {
 					return true;
 				}
 			}
@@ -143,15 +143,15 @@ class AdelWAF {
 	
 	function sanitizeAndCheckAttacks($info, $key, $value) {
 		$sanitizedValue = is_array($value) ? array_map(['AdelWAF', 'sanitizeAndCheckAttacks'], array_fill(0, count($value), $info), array_keys($value), $value) : html_entity_decode(str_replace(" ", "", strtolower($value)));
-		if ($this->strposa($this->xssRules, $sanitizedValue))
+		if ($this->striposa($this->xssRules, $sanitizedValue))
 			$this->warn($info, 'Cross-site scripting (XSS)', $key, $sanitizedValue);
-		elseif ($this->strposa($this->sqliRules, $sanitizedValue))
+		elseif ($this->striposa($this->sqliRules, $sanitizedValue))
 			$this->warn($info, 'SQL injection (SQLI)', $key, $sanitizedValue);
-		elseif ($this->strposa($this->rfiRules, $sanitizedValue))
+		elseif ($this->striposa($this->rfiRules, $sanitizedValue))
 			$this->warn($info, 'Remote file inclusion (RFI)', $key, $sanitizedValue);
-		elseif ($this->strposa($this->rceRules, $sanitizedValue))
+		elseif ($this->striposa($this->rceRules, $sanitizedValue))
 			$this->warn($info, 'Remote code execution (RCE)', $key, $sanitizedValue);
-		elseif ($this->strposa($this->lfiRules, $sanitizedValue))
+		elseif ($this->striposa($this->lfiRules, $sanitizedValue))
 			$this->warn($info, 'Local file inclusion (LFI)', $key, $sanitizedValue);
 
 		return;
@@ -165,12 +165,12 @@ class AdelWAF {
 	function run() {
 		if ($this->ENABLE_WAF) {	
 			$info = $this->infoCollect();
-			if (!$this->strposa($this->EXCLUDE_DOMAINS, $_SERVER['HTTP_HOST'])) {
+			if (!$this->striposa($this->EXCLUDE_DOMAINS, $_SERVER['HTTP_HOST'])) {
 				if (count($_REQUEST) > $this->MAX_REQ_LEN) {
 					$this->warn($info, 'Denial of service (DOS)', 'count', count($_REQUEST));
 				} else {
 					if (!isset($_COOKIE['phpMyAdmin'])) {
-					//	if ($this->strposa($this->webShellRules, file_get_contents(realpath(dirname(__DIR__)).$_SERVER['PHP_SELF']))) $this->warn($info, 'Web shell');				
+						if ($this->striposa($this->webShellRules, file_get_contents(realpath(dirname(__DIR__)).$_SERVER['PHP_SELF']))) $this->warn($info, 'Web shell');				
 						foreach ($_REQUEST as $key => $value) {
 							$this->sanitizeAndCheckAttacks($info, $key, $value);
 						}
