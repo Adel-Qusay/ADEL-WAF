@@ -39,16 +39,29 @@ class AdelWAF {
 			die();
 		}
 	}
-	
-	function strposa($needles, $str) {
-		foreach ($needles as $needle) {
-			if (strpos($str, $needle) !== false) {
-				return true;
-			}			
+
+	function strposa($needles, $haystack) {
+		if (!is_array($needles)) {
+			$needles = [$needles];
 		}
+
+		foreach ($needles as $needle) {
+			if (is_array($haystack)) {
+				foreach ($haystack as $hay) {
+					if (strpos($hay, $needle) !== false) {
+						return true;
+					}
+				}
+			} else {
+				if (strpos($haystack, $needle) !== false) {
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
-	
+
 	function clean($data){
 		return filter_var(rawurldecode(htmlspecialchars($data)), FILTER_SANITIZE_STRING);
 	}
@@ -128,6 +141,21 @@ class AdelWAF {
 		$this->warningHTML($info, $_SERVER['REQUEST_METHOD'], $msg);
 	}
 	
+	function sanitizeAndCheckAttacks($info, $key, $value) {
+		$sanitizedValue = is_array($value) ? array_map(['AdelWAF', 'sanitizeAndCheckAttacks'], array_fill(0, count($value), $info), array_keys($value), $value) : html_entity_decode(str_replace(" ", "", strtolower($value)));
+		if ($this->strposa($this->xssRules, $sanitizedValue))
+			$this->warn($info, 'Cross-site scripting (XSS)', $key, $sanitizedValue);
+		elseif ($this->strposa($this->sqliRules, $sanitizedValue))
+			$this->warn($info, 'SQL injection (SQLI)', $key, $sanitizedValue);
+		elseif ($this->strposa($this->rfiRules, $sanitizedValue))
+			$this->warn($info, 'Remote file inclusion (RFI)', $key, $sanitizedValue);
+		elseif ($this->strposa($this->rceRules, $sanitizedValue))
+			$this->warn($info, 'Remote code execution (RCE)', $key, $sanitizedValue);
+		elseif ($this->strposa($this->lfiRules, $sanitizedValue))
+			$this->warn($info, 'Local file inclusion (LFI)', $key, $sanitizedValue);
+
+		return;
+	}	
 
 	function warningHTML($info, $method, $typeVuln) {
 		header('HTTP/1.0 403 Forbidden');
@@ -142,19 +170,9 @@ class AdelWAF {
 					$this->warn($info, 'Denial of service (DOS)', 'count', count($_REQUEST));
 				} else {
 					if (!isset($_COOKIE['phpMyAdmin'])) {
-					//	if ($this->strposa($this->webShellRules, file_get_contents(realpath(dirname(__DIR__)).$_SERVER['PHP_SELF']))) $this->warn($info, 'Web shell');						
+					//	if ($this->strposa($this->webShellRules, file_get_contents(realpath(dirname(__DIR__)).$_SERVER['PHP_SELF']))) $this->warn($info, 'Web shell');				
 						foreach ($_REQUEST as $key => $value) {
-							$value = html_entity_decode(str_replace(" ", "", strtolower($value)));
-							if ($this->strposa($this->xssRules, $value))
-								$this->warn($info, 'Cross-site scripting (XSS)', $key, $value);
-							elseif ($this->strposa($this->sqliRules, $value))
-								$this->warn($info, 'SQL injection (SQLI)', $key, $value);
-							elseif ($this->strposa($this->rfiRules, $value))
-								$this->warn($info, 'Remote file inclusion (RFI)', $key, $value);
-							elseif ($this->strposa($this->rceRules, $value))
-								$this->warn($info, 'Remote code execution (RCE)', $key, $value);
-							elseif ($this->strposa($this->lfiRules, $value))
-								$this->warn($info, 'Local file inclusion (LFI)', $key, $value);						
+							$this->sanitizeAndCheckAttacks($info, $key, $value);
 						}
 					}
 				}
