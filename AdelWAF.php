@@ -14,7 +14,7 @@ class AdelWAF {
 	private $ENABLE_WAF = true;
 	private $EXCLUDE_DOMAINS = array("zerowaf.test");
 	private $ENABLE_EMAIL_NOTIFICATIONS = false;
-	private $EMAIL = 'email@email.com'; 
+	private $EMAIL = 'info@yoursite.com'; 
 	private $ENABLE_LOGS = true;
 	private $MAX_REQ_LEN = 20;	
 	private $LOGS_FILE = 'awlogs.txt';
@@ -170,7 +170,7 @@ class AdelWAF {
 					$this->warn($info, 'Denial of service (DOS)', 'count', count($_REQUEST));
 				} else {
 					if (!isset($_COOKIE['phpMyAdmin'])) {
-						if ($this->striposa($this->webShellRules, file_get_contents(realpath(dirname(__DIR__)).$_SERVER['PHP_SELF']))) $this->warn($info, 'Web shell');				
+						if ($this->striposa($this->webShellRules, file_get_contents($_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF']))) $this->warn($info, 'Web shell');				
 						foreach ($_REQUEST as $key => $value) {
 							$this->sanitizeAndCheckAttacks($info, $key, $value);
 						}
