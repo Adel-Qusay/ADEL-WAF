@@ -40,17 +40,31 @@ class AdelWAF {
 		}
 	}
 	
-	function strposa($needles, $str) {
-		foreach ($needles as $needle) {
-			if (strpos($str, $needle) !== false) {
-				return true;
-			}			
+	function striposa($needles, $haystack) {
+		if (!is_array($needles)) {
+			$needles = [$needles];
 		}
+
+		foreach ($needles as $needle) {
+			if (is_array($haystack)) {
+				foreach ($haystack as $hay) {
+					if (stripos($hay, $needle) !== false) {
+						return true;
+					}
+				}
+			} else {
+				if (stripos($haystack, $needle) !== false) {
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
 	
+	// source: https://wordpress.org/support/topic/deprecated-constant-filter_sanitize_string-is-deprecated/
 	function clean($data){
-		return filter_var(rawurldecode(htmlspecialchars($data)), FILTER_SANITIZE_STRING);
+        return preg_replace("/[^A-Za-z0-9 ]/", '',rawurldecode(htmlspecialchars($data)));  // return filter_var(rawurldecode(htmlspecialchars($data)), FILTER_SANITIZE_STRING);
 	}
 		
 	function getEnvir($st_var) {
@@ -138,23 +152,23 @@ class AdelWAF {
 	function run() {
 		if ($this->ENABLE_WAF) {	
 			$info = $this->infoCollect();
-			if (!$this->strposa($this->EXCLUDE_DOMAINS, $_SERVER['HTTP_HOST'])) {				
+			if (!$this->striposa($this->EXCLUDE_DOMAINS, $_SERVER['HTTP_HOST'])) {				
 				if (count($_REQUEST) > 20) {
 					$this->warn($info, 'Denial of service (DOS)', 'count', count($_REQUEST));
 				} else {
 					foreach ($_REQUEST as $key => $value) {
 						$value = html_entity_decode(str_replace(" ", "", strtolower($value)));
-						if ($this->strposa($this->webShellRules, $value))
+						if ($this->striposa($this->webShellRules, $value))
 							$this->warn($info, 'Web shell', $key, $value);							
-						elseif ($this->strposa($this->xssRules, $value))
+						elseif ($this->striposa($this->xssRules, $value))
 							$this->warn($info, 'Cross-site scripting (XSS)', $key, $value);
-						elseif ($this->strposa($this->sqliRules, $value))
+						elseif ($this->striposa($this->sqliRules, $value))
 							$this->warn($info, 'SQL injection (SQLI)', $key, $value);
-						elseif ($this->strposa($this->rfiRules, $value))
+						elseif ($this->striposa($this->rfiRules, $value))
 							$this->warn($info, 'Remote file inclusion (RFI)', $key, $value);
-						elseif ($this->strposa($this->rceRules, $value))
+						elseif ($this->striposa($this->rceRules, $value))
 							$this->warn($info, 'Remote code execution (RCE)', $key, $value);
-						elseif ($this->strposa($this->lfiRules, $value))
+						elseif ($this->striposa($this->lfiRules, $value))
 							$this->warn($info, 'Local file inclusion (LFI)', $key, $value);					
 					}
 				}
